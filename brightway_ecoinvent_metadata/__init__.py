@@ -1,0 +1,34 @@
+__version__ = (0, 1)
+__all__ = (
+    "add_ecoinvent_metadata",
+    "EcoinventMetadataImporter",
+    "generate_ecoinvent_metadata",
+)
+
+from .importer import EcoinventMetadataImporter
+from pathlib import Path
+
+
+def add_ecoinvent_metadata(version):
+    pass
+
+
+def generate_ecoinvent_metadata(
+    version=LATEST, temp_project="__ecoinvent_metadata_temp__", source_data=None
+):
+    import bw_default_backend as backend
+    from brightway_projects import projects
+
+    if not source_data:
+        # Requires ``source_data`` branch checkout
+        source_data = Path(__file__, "..").resolve() / "source_data"
+
+    assert temp_project not in projects
+    projects.create(temp_project)
+
+    backend.Location.delete().execute()
+    backend.Geocollection.delete().execute()
+
+    ei = EcoinventMetadataImporter(source_data=source_data)
+    ei.apply_strategies()
+    backend.write_data(ei.data)
