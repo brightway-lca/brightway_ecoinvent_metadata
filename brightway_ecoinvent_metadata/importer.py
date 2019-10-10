@@ -16,6 +16,7 @@ from pathlib import Path
 
 
 EMISSIONS_CATEGORIES = {"air": "emission", "soil": "emission", "water": "emission"}
+SOURCE_DATA = Path(__file__, "..").resolve() / "source_data"
 
 
 def extract_flow_data(o):
@@ -37,7 +38,7 @@ def extract_flow_data(o):
 class EcoinventMetadataImporter(LCIImporter):
     format = "Ecoinvent XML"
 
-    def __init__(self, source_data, version):
+    def __init__(self, version, source_data=SOURCE_DATA):
         self.source_data = Path(source_data)
         self.version = version
 
