@@ -6,8 +6,11 @@ __all__ = (
 )
 
 from .importer import EcoinventMetadataImporter
-from pathlib import Path
+from brightway_projects import projects
 from bw_default_backend.io import insert_existing_database
+from pathlib import Path
+import bw_default_backend as backend
+
 
 LATEST = "3.6"
 
@@ -22,9 +25,6 @@ def add_ecoinvent_metadata(version=LATEST):
 def generate_ecoinvent_metadata(
     version=LATEST, temp_project="__ecoinvent_metadata_temp__", source_data=None
 ):
-    import bw_default_backend as backend
-    from brightway_projects import projects
-
     if not source_data:
         # Requires ``source_data`` branch checkout
         source_data = Path(__file__, "..").resolve() / "source_data"
