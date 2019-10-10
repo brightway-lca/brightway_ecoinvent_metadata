@@ -7,12 +7,14 @@ __all__ = (
 
 from .importer import EcoinventMetadataImporter
 from pathlib import Path
+from bw_default_backend.io import insert_existing_database
 
 LATEST = "3.6"
 
 
-def add_ecoinvent_metadata(version):
-    pass
+def add_ecoinvent_metadata(version=LATEST):
+    filepath = Path(__file__, "..").resolve() / "data" / f"ecoinvent_metadata.{version}.db"
+    insert_existing_database(filepath)
 
 
 def generate_ecoinvent_metadata(

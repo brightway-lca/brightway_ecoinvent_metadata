@@ -1,4 +1,5 @@
 from .lcia import get_lcia_units, get_lcia_cfs, get_lcia_categories
+from .strategies import drop_selected_lci_results
 from brightway_io.importers.base_lci import LCIImporter
 from brightway_io.strategies import (
     drop_unspecified_subcategories,
@@ -47,11 +48,13 @@ class EcoinventMetadataImporter(LCIImporter):
             self.source_data, self.version
         )
         self.strategies = [
+            drop_selected_lci_results,
             normalize_units,
             drop_unspecified_subcategories,
             partial(number_objects, key="characterization factors", sorting_fields=("method", "name", "categories")),
             partial(number_objects, key="methods", sorting_fields=("name",)),
             partial(number_objects, key="flows", sorting_fields=("name", "categories")),
+            partial(number_objects, key="characterization factors", sorting_fields=("method_id", "flow_id")),
             partial(
                 internal_linking,
                 source_key="methods",
