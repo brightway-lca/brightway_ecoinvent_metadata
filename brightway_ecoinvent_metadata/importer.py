@@ -51,10 +51,18 @@ class EcoinventMetadataImporter(LCIImporter):
             drop_selected_lci_results,
             normalize_units,
             drop_unspecified_subcategories,
-            partial(number_objects, key="characterization factors", sorting_fields=("method", "name", "categories")),
+            partial(
+                number_objects,
+                key="characterization factors",
+                sorting_fields=("method", "name", "categories"),
+            ),
             partial(number_objects, key="methods", sorting_fields=("name",)),
             partial(number_objects, key="flows", sorting_fields=("name", "categories")),
-            partial(number_objects, key="characterization factors", sorting_fields=("method_id", "flow_id")),
+            partial(
+                number_objects,
+                key="characterization factors",
+                sorting_fields=("method_id", "flow_id"),
+            ),
             partial(
                 internal_linking,
                 source_key="methods",
@@ -70,7 +78,7 @@ class EcoinventMetadataImporter(LCIImporter):
                 link_field="flow_id",
                 source_fields=["name", "categories"],
             ),
-            partial(drop_attribute, key='characterization factors', attribute='method'),
+            partial(drop_attribute, key="characterization factors", attribute="method"),
             selection("characterization factors", assign_no_uncertainty),
         ]
 

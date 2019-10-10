@@ -13,7 +13,9 @@ LATEST = "3.6"
 
 
 def add_ecoinvent_metadata(version=LATEST):
-    filepath = Path(__file__, "..").resolve() / "data" / f"ecoinvent_metadata.{version}.db"
+    filepath = (
+        Path(__file__, "..").resolve() / "data" / f"ecoinvent_metadata.{version}.db"
+    )
     insert_existing_database(filepath)
 
 
