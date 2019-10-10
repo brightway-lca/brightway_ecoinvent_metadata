@@ -1,1 +1,4 @@
 brightway_ecoinvent_metadata/data/ecoinvent_metadata.3.6.db filter=lfs diff=lfs merge=lfs -text
+brightway_ecoinvent_metadata/source_data/categoryUUIDs.csv filter=lfs diff=lfs merge=lfs -text
+brightway_ecoinvent_metadata/source_data/3.6/LCIA_implementation.xlsx filter=lfs diff=lfs merge=lfs -text
+brightway_ecoinvent_metadata/source_data/3.6/ecoinvent[[:space:]]elementary[[:space:]]flows.xml filter=lfs diff=lfs merge=lfs -text
