@@ -8,6 +8,8 @@ __all__ = (
 from .importer import EcoinventMetadataImporter
 from pathlib import Path
 
+LATEST = "3.6"
+
 
 def add_ecoinvent_metadata(version):
     pass
@@ -29,6 +31,6 @@ def generate_ecoinvent_metadata(
     backend.Location.delete().execute()
     backend.Geocollection.delete().execute()
 
-    ei = EcoinventMetadataImporter(source_data=source_data)
+    ei = EcoinventMetadataImporter(source_data=source_data, version=version)
     ei.apply_strategies()
-    backend.write_data(ei.data)
+    backend.create(ei.data)

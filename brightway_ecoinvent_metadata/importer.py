@@ -1,19 +1,17 @@
+from .lcia import get_lcia_units, get_lcia_cfs, get_lcia_categories
 from brightway_io.importers.base_lci import LCIImporter
-from brightway_io.strategies import drop_unspecified_subcategories, normalize_units
-from brightway_io.utils import recursive_str_to_unicode
+from brightway_io.strategies import (
+    drop_unspecified_subcategories,
+    internal_linking,
+    normalize_units,
+    number_objects,
+    drop_attribute,
+    assign_no_uncertainty,
+)
+from brightway_io.utils import recursive_str_to_unicode, selection
+from functools import partial
 from lxml import objectify
 from pathlib import Path
-
-
-from ..strategies import (
-    drop_unspecified_subcategories,
-    link_iterable_by_fields,
-    normalize_units,
-    rationalize_method_names,
-    set_biosphere_type,
-)
-from numbers import Number
-import warnings
 
 
 EMISSIONS_CATEGORIES = {"air": "emission", "soil": "emission", "water": "emission"}
@@ -44,60 +42,50 @@ class EcoinventMetadataImporter(LCIImporter):
 
         self.data["flows"] = self.extract_flows()
         self.data["collections"] = [{"id": 1, "name": f"ecoinvent {version} biosphere"}]
+        self.data["methods"] = self.extract_methods()
+        self.data["characterization factors"] = get_lcia_cfs(
+            self.source_data, self.version
+        )
         self.strategies = [
             normalize_units,
             drop_unspecified_subcategories,
-            # functools.partial(link_iterable_by_fields,
-            #     other=Database(config.biosphere),
-            #     fields=('name', 'categories')
-            # ),
+            partial(number_objects, key="characterization factors", sorting_fields=("method", "name", "categories")),
+            partial(number_objects, key="methods", sorting_fields=("name",)),
+            partial(number_objects, key="flows", sorting_fields=("name", "categories")),
+            partial(
+                internal_linking,
+                source_key="methods",
+                target_key="characterization factors",
+                link_field="method_id",
+                source_fields=["name"],
+                target_fields=["method"],
+            ),
+            partial(
+                internal_linking,
+                source_key="flows",
+                target_key="characterization factors",
+                link_field="flow_id",
+                source_fields=["name", "categories"],
+            ),
+            partial(drop_attribute, key='characterization factors', attribute='method'),
+            selection("characterization factors", assign_no_uncertainty),
         ]
 
     def extract_flows(self):
-        fp = str(self.source_data / version / "ecoinvent elementary flows.xml")
+        fp = str(self.source_data / self.version / "ecoinvent elementary flows.xml")
         root = objectify.parse(open(fp, encoding="utf-8")).getroot()
         return recursive_str_to_unicode(
             [extract_flow_data(ds) for ds in root.iterchildren()]
         )
 
-    def separate_methods(self):
-        """Separate the list of CFs into distinct methods"""
-        methods = {obj["method"] for obj in self.cf_data}
-        metadata = {obj["name"]: obj for obj in self.csv_data}
+    def extract_methods(self):
+        descriptions = {
+            o["name"]: o["description"]
+            for o in get_lcia_categories(self.source_data, self.version)
+        }
+        units = get_lcia_units(self.source_data, self.version)
+        for obj in units:
+            if obj["name"] in descriptions:
+                obj["description"] = descriptions[obj["name"]]
 
-        self.data = {}
-
-        missing = set()
-
-        for line in self.cf_data:
-            if line["method"] not in self.units:
-                missing.add(line["method"])
-
-        if missing:
-            _ = lambda x: sorted([str(y) for y in x])
-            warnings.warn("Missing units for following:" + " | ".join(_(missing)))
-
-        for line in self.cf_data:
-            assert isinstance(line["amount"], Number)
-
-            if line["method"] not in self.data:
-                self.data[line["method"]] = {
-                    "filename": self.file,
-                    "unit": self.units.get(line["method"], ""),
-                    "name": line["method"],
-                    "description": "",
-                    "exchanges": [],
-                }
-
-            self.data[line["method"]]["exchanges"].append(
-                {
-                    "name": line["name"],
-                    "categories": line["categories"],
-                    "amount": line["amount"],
-                }
-            )
-
-        self.data = list(self.data.values())
-
-        for obj in self.data:
-            obj.update(metadata.get(obj["name"], {}))
+        return units

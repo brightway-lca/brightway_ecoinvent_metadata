@@ -1,12 +1,12 @@
 from numbers import Number
+from pathlib import Path
 import csv
 import xlrd
 
 
 def get_lcia_categories(source_data, version):
-    with csv.open(
-        source_data / "categoryUUIDs.csv", encoding="latin-1", delimiter=";"
-    ) as csv_file:
+    with open(Path(source_data) / "categoryUUIDs.csv", encoding="latin-1") as file_obj:
+        csv_file = csv.reader(file_obj, delimiter=";")
         next(csv_file)  # Skip header row
         csv_data = [
             {
@@ -22,7 +22,7 @@ def get_lcia_categories(source_data, version):
 
 def get_lcia_cfs(source_data, version):
     sheet = xlrd.open_workbook(
-        source_data / version / "LCIA_implementation.xlsx"
+        Path(source_data) / version / "LCIA_implementation.xlsx"
     ).sheet_by_name("CFs")
 
     EXCLUDED = {"selected LCI results, additional", "selected LCI results"}
@@ -48,16 +48,17 @@ def get_lcia_cfs(source_data, version):
 
 def get_lcia_units(source_data, version):
     sheet = xlrd.open_workbook(
-        source_data / version / "LCIA_implementation.xlsx"
+        Path(source_data) / version / "LCIA_implementation.xlsx"
     ).sheet_by_name("units")
 
-    units = {
-        (
-            sheet.cell(row, 0).value,
-            sheet.cell(row, 1).value,
-            sheet.cell(row, 2).value,
-        ): sheet.cell(row, 3).value
+    return [
+        {
+            "name": (
+                sheet.cell(row, 0).value,
+                sheet.cell(row, 1).value,
+                sheet.cell(row, 2).value,
+            ),
+            "unit": sheet.cell(row, 3).value,
+        }
         for row in range(1, sheet.nrows)
-    }
-
-    return units
+    ]
