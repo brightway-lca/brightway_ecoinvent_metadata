@@ -29,7 +29,7 @@ To regenerate the metadata database, run the following in a new project:
 
     # Change as desired
     temp_project = "__ecoinvent_metadata_temp__"
-    projects.create(temp_project)
+    projects.create_project(temp_project)
     version = "3.6" # Or whatever
     ei = EcoinventMetadataImporter(version=version)
     ei.apply_strategies()
