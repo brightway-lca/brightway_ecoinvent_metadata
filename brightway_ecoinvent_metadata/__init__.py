@@ -16,6 +16,7 @@ LATEST = "3.6"
 
 
 def add_ecoinvent_metadata(version=LATEST):
+    assert backend.UncertaintyType.select().count(), "Must create project with `add_base_data=True`"
     filepath = (
         Path(__file__, "..").resolve() / "data" / f"ecoinvent_metadata.{version}.db"
     )
