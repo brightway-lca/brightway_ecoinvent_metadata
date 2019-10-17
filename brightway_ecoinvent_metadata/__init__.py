@@ -29,8 +29,9 @@ def generate_ecoinvent_metadata(
         # Requires ``source_data`` branch checkout
         source_data = Path(__file__, "..").resolve() / "source_data"
 
-    assert temp_project not in projects
-    projects.create_project(temp_project)
+    if temp_project in projects:
+        projects.delete_project(temp_project)
+    projects.create_project(temp_project, add_base_data=True)
 
     backend.Location.delete().execute()
     backend.Geocollection.delete().execute()
