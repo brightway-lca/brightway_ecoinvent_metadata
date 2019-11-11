@@ -1,5 +1,5 @@
-brightway_io
-brightway_projects
+bw_io
+bw_projects
 bw_default_backend
 lxml
 xlrd

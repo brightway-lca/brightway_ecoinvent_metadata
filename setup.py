@@ -8,7 +8,7 @@ if root_dir:
 
 
 # Probably should be changed, __init__.py is no longer required for Python 3
-for dirpath, dirnames, filenames in os.walk('brightway_ecoinvent_metadata'):
+for dirpath, dirnames, filenames in os.walk('bw_ecoinvent_metadata'):
     # Ignore dirnames that start with '.'
     if '__init__.py' in filenames:
         pkg = dirpath.replace(os.path.sep, '.')
@@ -26,21 +26,21 @@ def package_files(directory):
 
 
 setup(
-    name='brightway_ecoinvent_metadata',
+    name='bw_ecoinvent_metadata',
     version="0.1",
     packages=packages,
     author='Chris Mutel',
     author_email='cmutel@gmail.com',
     license="BSD 3-clause",
-    package_data={'brightway_ecoinvent_metadata': package_files(os.path.join('brightway_ecoinvent_metadata', 'data'))},
+    package_data={'bw_ecoinvent_metadata': package_files(os.path.join('bw_ecoinvent_metadata', 'data'))},
     install_requires=[
-        'brightway_io',
+        'bw_io',
         'bw_projects',
         'bw_default_backend',
         'lxml',
         'xlrd',
     ],
-    url="https://github.com/brightway-lca/brightway_ecoinvent_metadata",
+    url="https://github.com/brightway-lca/bw_ecoinvent_metadata",
     long_description_content_type='text/markdown',
     long_description=open('README.md').read(),
     description='Versioned ecoinvent flows, methods, and characterization factors for Brightway',

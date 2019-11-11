@@ -1,7 +1,7 @@
 from .lcia import get_lcia_units, get_lcia_cfs, get_lcia_categories
 from .strategies import drop_selected_lci_results
-from brightway_io.importers.base_lci import LCIImporter
-from brightway_io.strategies import (
+from bw_io.importers.base_lci import LCIImporter
+from bw_io.strategies import (
     drop_unspecified_subcategories,
     internal_linking,
     normalize_units,
@@ -9,7 +9,7 @@ from brightway_io.strategies import (
     drop_attribute,
     assign_no_uncertainty,
 )
-from brightway_io.utils import recursive_str_to_unicode, selection
+from bw_io.utils import recursive_str_to_unicode, selection
 from functools import partial
 from lxml import objectify
 from pathlib import Path
