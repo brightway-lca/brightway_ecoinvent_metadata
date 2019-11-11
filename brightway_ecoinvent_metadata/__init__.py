@@ -6,7 +6,7 @@ __all__ = (
 )
 
 from .importer import EcoinventMetadataImporter
-from brightway_projects import projects
+from bw_projects import projects
 from bw_default_backend.io import insert_existing_database
 from pathlib import Path
 import bw_default_backend as backend

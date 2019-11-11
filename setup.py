@@ -35,7 +35,7 @@ setup(
     package_data={'brightway_ecoinvent_metadata': package_files(os.path.join('brightway_ecoinvent_metadata', 'data'))},
     install_requires=[
         'brightway_io',
-        'brightway_projects',
+        'bw_projects',
         'bw_default_backend',
         'lxml',
         'xlrd',
